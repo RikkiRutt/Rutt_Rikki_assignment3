@@ -464,6 +464,15 @@ app.post('/add_to_cart', function (request, response) {
 })
 
 app.post('/update_shopping_cart', function (request, response) {
+    let POST = request.body;
+
+    let products_key = POST['products_key'];
+
+    for (products_key in request.session.cart) {
+        for (let i in request.session.cart[products_key]) {
+            request.session.cart[products_key][i] = Number(request.body[`cartInput_${products_key}${i}`]);
+        }
+    }
 })
 
 app.post('/continue', function (request, response) {
