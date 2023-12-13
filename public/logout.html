@@ -7,6 +7,14 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>Rik's Car Parts Store Home</title>
+
+         <!-- Loading products information -->
+          <script src="./products.js"></script>
+
+          <!-- Loading navbar links -->
+         <script type="text/javascript" src="/functions.js"></script>
+        <script type="text/javascript" src="/navbar.js"></script>
+
         <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Bootstrap icons-->
@@ -15,7 +23,7 @@
         <link href="css/styles.css" rel="stylesheet" />
     </head>
     <body>
-        <!-- Navigation-->
+        <!-- Navigation--> <!--
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container px-4 px-lg-5">
                 <span class="navbar-brand" href="#!">Rik's Parts Store</span>
@@ -34,7 +42,7 @@
                     </form>
                 </div>
             </div>
-        </nav>
+        </nav>-->
         <!-- Header-->
         <header class="bg-dark py-5">
             <div class="container px-4 px-lg-5 my-5">
@@ -45,11 +53,18 @@
             </div>
         </header>
         <br>
-        <a href="product_display.html">
-            <img src="Images/store.jpg" alt="Parts Store" style="display: block; margin: auto; width:100%; max-width:300px;">
-        </a>
+    <div class="container table-container">
+        <h4 id="verify" style="color: #ff2e2e;"></h4>
+
+        <div class="buttons-container">
+            <form name="invoice" method="POST">
+                <input type="hidden" name="email" id="email">
+                <input class="sm-button highlight" type="submit" value="Logout" name="logout" onclick="invoice.action='/process_logout'" style="width: 40%;">
+            </form>
+        </div>
+    </div>
         <br>
-        <p style="text-align: center; font-size: 20px;"> <strong>Welcome! Click on the image to enter the store.</strong></p>
+       <script src="./logout.js"></script>
         <br>
         <!-- Footer-->
         <footer class="py-5 bg-dark">
