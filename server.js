@@ -116,6 +116,7 @@ function checkQuantitiesOnServer(POST) {
 let user_data;
 
 const fs=require('fs');
+const e = require('express');
 const filename= __dirname + '/user_data.json';
 if (fs.existsSync(filename)) {
     let data=fs.readFileSync(filename, 'utf-8');
@@ -493,6 +494,41 @@ app.post('/complete_purchase', function (request, response) {
 })
 
 app.post('/process_logout', function (request, response) {
+    //get users cookie and parse it
+    let cookie = JSON.parse(request.cookies['user_cookie']);
+
+    let email = cookie['email'];
+
+    if (user_data[email] && user_data[email].status == true) {
+        //remove user from status
+        delete status[email];
+
+        //change users status to false
+        user_data[email].status = false;
+
+        //clear users cookie
+        response.clearCookie("user_cookie");
+
+        //update number of active users in session
+        request.session.users = Object.keys(status).length;
+
+        //async write updates user_data and products to their files
+        fs.writeFile(filename, JSON.stringify(user_data), 'utf-8', (err) => {
+            if (err) {
+                console.error('Error updatinguser data:',err);
+            } else {
+                console.log('User data has been updated!');
+                console.log(user_data);
+                console.log(`User with email ${email} was successfully logged out`);
+                response.redirect('/index.html?');
+            }
+        });
+    } else {
+        console.log(user_data);
+        console.log(status);
+        console.error(`User with email ${email} not found or is already logged out.`);
+        response.redirect('/index.html?');
+    }
 })
 
 // Start the server; listen on port 8080 for incoming HTTP requests
