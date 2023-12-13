@@ -4,6 +4,7 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const qs = require('querystring');
+const session = require('express-session');//check if need
 
 const app = express();
 const server = http.createServer(app);
@@ -12,6 +13,16 @@ const wss = new WebSocket.Server({ server });
 // Middleware to log all requests
 app.all('*', function (request, response, next) {
     console.log(request.method + ' to ' + request.path);
+
+    //make session cart at any request (able to add to cart before login)
+    //sores quantities info
+    if (typeof request.session.cart == 'undefined') {
+        request.session.cart = {};
+    }
+//make session users at any request to stire number of useres online
+    if (typeof request.session.users == 'undefined') {
+        request.session.users = Object.keys(status).length;
+    }
     next();
 });
 
