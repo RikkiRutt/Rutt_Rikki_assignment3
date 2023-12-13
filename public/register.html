@@ -7,6 +7,14 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>Rik's Car Parts Store Home</title>
+
+                  <!-- Loading products information -->
+                  <script src="./products.js"></script>
+
+                  <!-- Loading navbar links -->
+                 <script type="text/javascript" src="/functions.js"></script>
+                <script type="text/javascript" src="/navbar.js"></script>
+
         <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Bootstrap icons-->
@@ -15,23 +23,34 @@
         <link href="css/styles.css" rel="stylesheet" />
     </head>
     <body>
+        <!-- Used sals nav and templet nav (mashed by chatgpt)-->
         <!-- Navigation-->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container px-4 px-lg-5">
                 <span class="navbar-brand" href="#!">Rik's Parts Store</span>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <button class="navbar-toggler" id="toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="fa-solid fa-bars highlight"></span>
+                </button>
+        
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="index.html">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="product_display.html">Shop</a></li>
-                    </ul>
-                    <form class="d-flex">
-                        <!-- save for a3 <button class="btn btn-outline-dark" type="submit">
+                    <div class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item"><a class="nav-link mx-3 highlight" href="/index.html" active>Home</a></li>
+                        <script>nav_bar(products_key, products)</script>
+                    </div>
+                </div>
+        
+                <div id="sticky-navbar" class="d-none d-md-block">
+                    <div id="top-nav" class="py-3">
+                        <!-- Old Cart Button -->
+                        <button class="btn btn-outline-dark" type="submit">
                             <i class="bi-cart-fill me-1"></i>
                             Cart
                             <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
-                        </button> -->
-                    </form>
+                        </button>
+        
+                        <!-- Container to store links to different product categories -->
+                        <div id="nav_container"></div>
+                    </div>
                 </div>
             </div>
         </nav>
