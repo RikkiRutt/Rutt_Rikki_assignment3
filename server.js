@@ -474,7 +474,7 @@ app.post('/update_shopping_cart', function (request, response) {
         }
     }
 
-    response.redirect(`/cart.html`);
+    response.redirect('/cart.html');
 })
 
 app.post('/continue', function (request, response) {
@@ -482,6 +482,11 @@ app.post('/continue', function (request, response) {
 })
 
 app.post('/checkout', function (request, response) {
+    if (typeof request.cookies['user_cookie'] == 'undefined') {
+        response.redirect(`/login.html?`)
+    } else {
+        response.redirect('/invoice.html?valid');
+    }
 })
 
 app.post('/complete_purchase', function (request, response) {
