@@ -117,6 +117,7 @@ let user_data;
 
 const fs=require('fs');
 const e = require('express');
+const { json } = require('body-parser');
 const filename= __dirname + '/user_data.json';
 if (fs.existsSync(filename)) {
     let data=fs.readFileSync(filename, 'utf-8');
@@ -491,6 +492,99 @@ app.post('/checkout', function (request, response) {
 })
 
 app.post('/complete_purchase', function (request, response) {
+    //get users cookie and parse it
+    let cookie = JSON.parse(request.cookies['user_cookie']);
+    //get user email
+    let email = cookie['email'];
+
+    let subtotal = 0;
+    let total = 0;
+
+    //create start of invoice table
+    let invoice_str = `
+        Thank you for your order!
+            <table>
+                <thread>
+                    <tr>
+                        <th>Item</th>
+                        <th>Quantity Purchased</th>
+                        <th>Remaining Inventory</th>
+                        <th>Price</th>
+                        <th>Extended Price</th>
+                    </tr>
+                </thread>
+                <tbody>
+    `;
+    let shopping_cart = request.session.cart;
+
+    //calculate quantity sold and inventory
+    for (let product_key in products) {
+        for (let i in products[product_key]) {
+            //if a prod cat has no qty slect skip it
+            if (typeof shopping_cart[product_key] == 'undefined') continue;
+            
+        let qty = shopping_cart[product_key][i];
+    
+    products[product_key][i].qty_sold += Number(qty);
+products[product_key][i].qty_available -= Number(qty) || 0;
+}
+    }
+
+    //async write updates prod to product.json
+    fs.writeFile(__dirname + '/products.json', JSON.stringify(products), 'uts-8', (err) => {
+        if (err) {
+            console.error('Error updating products data:', err);
+        } else {
+            console.log('Products data has been updated!');
+        }
+    });
+    //print out invoice table in email
+    for (let products_key in products) {
+        for (let i in products[products_key]) {
+            //if product cat has no quant then skip it
+            if (typeof shopping_cart[products_key] == 'undefined') continue;
+
+            let qty = shopping_cart[products_key][i];
+            if (qty >0) {
+
+                let extended_price = qty * products[products_key][i].price;
+                subtotal += `
+                <tr>
+                    <td>${products[products_key][i].name}</td>
+                    <td>${qty}</td>
+                    <td>${products[products_key][i].qty_available - qty}</td>
+                    <td>$${products[products_key][i].price.toFixed(2)}</td>
+                    <td>$${extended_price}</td>
+                </td>
+                `;
+            }
+        }
+    }
+
+    //sales tax
+    let tax_rate = (4.7/100);
+    let tax_amt = subtotal * tax_rate;
+
+    //shipping
+    if (subtotal < 300) {
+        shipping = 5;
+        shipping_display = `$${shipping.toFixed(2)}`;
+        total = Number(tax_amt + subtotal + shipping);
+    }
+    else if (subtotal >= 300 && subtotal < 500) {
+        shipping = 10;
+        shipping_display = `$${shipping.toFixed(2)}`;
+        total = Number(tax_amt + subtotal + shipping);
+    }
+    else {
+        shipping = 0;
+        shipping_display = `Free`;
+        total = Number(tax_amt + subtotal + shipping);
+    }
+
+    //add the remaining tax, subtotal, and tota information to invoice string
+
+    }
 })
 
 app.post('/process_logout', function (request, response) {
