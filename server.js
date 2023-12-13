@@ -456,11 +456,11 @@ app.post('/add_to_cart', function (request, response) {
     //set user_qty in session
     request.session.cart[products_key] = user_qty;
 
-    response.redirect(`/products.html?products_key=${POST['products_key']}`);
+    response.redirect(`/product_display.html?products_key=${POST['products_key']}`);
     }
     //if erroe
     else if (Object.keys(errorObject).length > 0) {
-        response.redirect(`/products.html?${qs.stringify(POST)}&inputErr`);
+        response.redirect(`/product_display.html?${qs.stringify(POST)}&inputErr`);
     }
 
 })
