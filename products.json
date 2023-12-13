@@ -42,8 +42,7 @@
 		"qty_available": 100,
 		"qty_sold": 0
 	}
-]
-}
+],
 	"Replacement Fluids": [
 	{
 		"model": "Motor Oil",
@@ -87,9 +86,7 @@
 		"qty_available": 100,
 		"qty_sold": 0
 	}
-]
-}
-{
+],
 	"Accessories": [
 	{
 		"model": "Front Wiper Blades",
