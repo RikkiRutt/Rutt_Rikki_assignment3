@@ -583,8 +583,29 @@ products[product_key][i].qty_available -= Number(qty) || 0;
     }
 
     //add the remaining tax, subtotal, and tota information to invoice string
+    invoice_str += `
+    <tr style="border-top: 2px solid black;">
+        <td colspan="4" style="text-align:center;>Sub-total</td>
+        <td>$${subtotal.toFixed(2)}</td>
+    </tr>
+    <tr>
+        <td colspan="4" style="text-align:center;">Tax @ ${Number(tax_rate) * 100}%</td>
+        <td>$${tax_amt.toFixed(2)}</td>
+    </tr>
+    <tr>
+        <td colspan="4" style"text-align:center;">Shipping</td>
+        <td>${shipping_display}</td>
+    </tr>
+    <td>
+        <td colspan="4" style"text-align:center;">total</td>
+        <td>$${total.toFixed(2)}</td>
+    </tr>
+    </tbody>
+    </table>
+    `;
 
-    }
+    request.session.destroy(); //clear cart
+    response.send(invoice_str);
 })
 
 app.post('/process_logout', function (request, response) {
