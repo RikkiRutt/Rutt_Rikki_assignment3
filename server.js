@@ -473,9 +473,12 @@ app.post('/update_shopping_cart', function (request, response) {
             request.session.cart[products_key][i] = Number(request.body[`cartInput_${products_key}${i}`]);
         }
     }
+
+    response.redirect(`/cart.html`);
 })
 
 app.post('/continue', function (request, response) {
+    response.redirect(`/produtct_display.html?`);
 })
 
 app.post('/checkout', function (request, response) {
