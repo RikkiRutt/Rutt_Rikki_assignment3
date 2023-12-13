@@ -1,4 +1,5 @@
-[
+{
+	"Replacement Parts": [
 	{
 		"model": "Oil Filter",
 		"price": 7.99,
@@ -42,3 +43,96 @@
 		"qty_sold": 0
 	}
 ]
+}
+{
+	"Replacement Fluids": [
+	{
+		"model": "Motor Oil",
+		"price": 8.99,
+		"image": "./Images/Oil.jpg",
+		"qty_available": 100,
+		"qty_sold": 0
+	},
+	{
+		"model": "Brake Fluid",
+		"price": 10.99,
+		"image": "./Images/Brake Fluid.jpg",
+		"qty_available": 100,
+		"qty_sold": 0
+	},
+    {
+		"model": "50/50 Coolant",
+		"price": 12.00,
+		"image": "./Images/Coolant.jpg",
+		"qty_available": 100,
+		"qty_sold": 0
+	},
+	{
+		"model": "Automatic Transmission Fluid",
+		"price": 15.99,
+		"image": "./Images/ATF.jpg",
+		"qty_available": 100,
+		"qty_sold": 0
+	},
+    {
+		"model": "CVT Fluid",
+		"price": 19.55,
+		"image": "./Images/CVT.jpg",
+		"qty_available": 100,
+		"qty_sold": 0
+	},
+	{
+		"model": "Gear Oil",
+		"price": 17.99,
+		"image": "./Images/Gear Oil.jpg",
+		"qty_available": 100,
+		"qty_sold": 0
+	}
+]
+}
+{
+	"Accessories": [
+	{
+		"model": "Front Wiper Blades",
+		"price": 25.99,
+		"image": "./Images/Front Wiper Blades.jpg",
+		"qty_available": 100,
+		"qty_sold": 0
+	},
+	{
+		"model": "Rear Wiper Blades",
+		"price": 12.99,
+		"image": "./Images/Rear Wiper Blades.jpg",
+		"qty_available": 100,
+		"qty_sold": 0
+	},
+    {
+		"model": "Wheel Lock Set",
+		"price": 48.00,
+		"image": "./Images/Wheel Locks.jpg",
+		"qty_available": 100,
+		"qty_sold": 0
+	},
+	{
+		"model": "Floor Mats",
+		"price": 75.99,
+		"image": "./Images/Floor Mat.jpg",
+		"qty_available": 100,
+		"qty_sold": 0
+	},
+    {
+		"model": "Trunk Mat",
+		"price": 55.55,
+		"image": "./Images/Trunk Mat.jpg",
+		"qty_available": 100,
+		"qty_sold": 0
+	},
+	{
+		"model": "Cargo Net",
+		"price": 38.99,
+		"image": "./Images/Cargo Net.jpg",
+		"qty_available": 100,
+		"qty_sold": 0
+	}
+]
+}
