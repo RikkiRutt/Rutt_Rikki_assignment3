@@ -1,6 +1,8 @@
 ////code used from sal, chat, and bing chat gpt
-// Get the URL
-let params = (new URL(document.location)).searchParams;
+//product card
+for (let i in products[products_key]) {
+
+}
 
 // Update the window.onload function to handle WebSocket messages
 window.onload = function () {
@@ -24,6 +26,18 @@ window.onload = function () {
                 console.error(`Qty input not found for product ${i}`);
                 continue; // Skip to the next iteration if the input is not found
             }
+
+                // Make input boxes sticky (for valid quantities) after returning from the cart
+    if ((typeof shopping_cart[products_key] != 'undefined') && (params.has('inputErr') != true)) {
+        for (let i in shopping_cart[products_key]) {
+            if (shopping_cart[products_key][i] == 0) {
+                document.getElementById(`qty${[i]}`).value = '';
+            } 
+            else {
+                document.getElementById(`qty${[i]}`).value = shopping_cart[products_key][i];
+            }
+        }
+    }
 
             let storedInvalidQty = localStorage.getItem(`invalidQty_${i}`);
 
@@ -120,7 +134,7 @@ window.addEventListener('websocket_open', function () {
 // Populate the DOM Form with the product details
 let productRow = document.querySelector('.row'); // Get the product row outside the loop
 
-for (let i = 0; i < products.length; i++) {
+for (let i = 0; i < products[products_key].length; i++) {
     // Create a product card for each product
     let productCard = document.createElement('div');
     productCard.className = 'col-md-4 product_card';
@@ -128,22 +142,22 @@ for (let i = 0; i < products.length; i++) {
 
     productCard.innerHTML = `
         <div>
-            <h5 class="product_name"><b>${products[i].model}</b></h5>
-            <h5>$${(products[i].price).toFixed(2)}</h5>
+            <h5 class="product_name"><b>${products[products_key][i].model}</b></h5>
+            <h5>$${(products[products_key][i].price).toFixed(2)}</h5>
         </div>  
-        <img src="${products[i].image}" style="width: 300px; height: 250px;" class="img-thumbnail" alt="${products[i].alt}">
+        <img src="${products[products_key][i].image}" style="width: 300px; height: 250px;" class="img-thumbnail" alt="${products[products_key][i].alt}">
         <div style="height: 90px;">
             <table style="width: 100%; text-align: center; font-size: 18px;" id="product_table">
                 <tr>
                     <!-- Display available quantity for the product -->
-                    <td style="text-align: left; width: 35%;">Available: ${products[i].qty_available}</td>
+                    <td style="text-align: left; width: 35%;">Available: ${products[products_key][i].qty_available}</td>
 
                     <!-- Label for quantity -->
                     <td style="text-align: left; width: 75%;"><label id="qty${[i]}_label" style="margin: 6px 0; padding-right: 10px;">Qty:</label></td>
                 </tr>
                 <tr>
                     <!-- Display sold quantity for the product -->
-                    <td style="text-align: left; width: 35%;" id="qty_sold${i}">Sold: ${products[i].qty_sold}</td>
+                    <td style="text-align: left; width: 35%;" id="qty_sold${i}">Sold: ${products[products_key][i].qty_sold}</td>
 
                     <!-- Input field for quantity and buttons to increase/decrease -->
                     <td style="text-align: left; width: 35%;" rowspan="2">
@@ -158,6 +172,9 @@ for (let i = 0; i < products.length; i++) {
                             <button type="button" class="qtyButton highlight" style="background-color: transparent; border: none; cursor: pointer; padding: 5px 10px; font-size: 30px; margin-bottom: 7px;" onclick="changeQuantity(${i}, 1)">+</button>
                         </div>
                     </td>
+                    <td colspan="3" style="padding-top: 10px;">
+                    <input type="submit" value="Add to cart" class="sm-button highlight">
+                </td>
                 </tr>
                 <tr>
                     <!-- Error message for quantity validation -->

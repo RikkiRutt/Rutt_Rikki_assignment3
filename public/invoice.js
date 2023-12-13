@@ -1,7 +1,4 @@
 ////code used from sal, chat, and and bing chat gpt
-// Get the URL
-let params = (new URL(document.location)).searchParams;
-
 // On load, if there is no 'valid' key, redirect the user back to the Home page
 window.onload = function() {
     if (!params.has('valid')) {
@@ -18,6 +15,21 @@ window.onload = function() {
         document.getElementById('helloMsg').innerHTML = `Thank you ${params.get('name')}, we appreciate your business!`;
     }
 }
+
+//If no user_cookie send to login page
+if (getCookie('user_cookie') != false) {
+    user_cookie = getCookie('user_cookie');
+} else{
+    location.href= '/login.html';
+    window.stop;
+}
+
+document.getElementById('verify').innerHTML = `
+<p>Please verify that the information shown below is correct: </p>
+<p>Name: ${user_cookie['name']}</p>
+<p>Email: ${user_cookie['email']}</p>
+`;
+
 //Initialize the subtotal to zero
 let subtotal = 0;
 
