@@ -4,11 +4,30 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const qs = require('querystring');
-const session = require('express-session');//check if need
+
 
 const app = express();
+
+/* Used to keep track of diffrent users data as go from page to page
+secret: a string used to sign the session id cookioe
+resave: forces session to be saved back to the session store
+saveUninitializedL forces a session that is "uninitialized" to be saved to the store
+uninitialized session is a new and not modified session
+*/
+
+const session = require('express-session');
+app.use(session({secret: "myNotSoSecretKey", resave: true, saveUninitialized: true}));
+
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
+
+/* git cookie
+require the cookie parser middleware
+parses the cookie header and pops req.cookies with an objext keyed by cookie name
+*/
+const cookieParser = require('cookie-parser');
+const {request} = require('http');
+app.use(cookieParser());
 
 // Middleware to log all requests
 app.all('*', function (request, response, next) {
@@ -44,7 +63,7 @@ wss.on('connection', function connection(ws) {
 });
 
 // Load product data from a JSON file
-let products = require(__dirname + "/products.json");
+const products = require(__dirname + "/products.json");
 
 // Serve product data as JavaScript
 app.get('/products.js', function (request, response, next) {
@@ -58,6 +77,8 @@ app.get('/products.js', function (request, response, next) {
 app.use(express.urlencoded({
     extended: true
 }));
+
+let status = {};
 
 // Function to validate quantity entered by user against available quantity
 function validateQuantity(quantity, availableQuantity) {
@@ -115,7 +136,7 @@ for (let i in products) {
 let temp_user={};
 
 // Process purchase requests
-app.post("/process_purchase", function (request, response) {
+/*app.post("/process_purchase", function (request, response) {
     let POST = request.body;
     let hasQty = false;
     let errorObject = {};
@@ -145,7 +166,7 @@ app.post("/process_purchase", function (request, response) {
 
                 //adjusted for after purchase on invoice
                 /*products[i].qty_sold += Number(qty);
-                products[i].qty_available -= Number(qty);*/ 
+                products[i].qty_available -= Number(qty); 
             }
             wss.broadcast(JSON.stringify(products));
             let params = new URLSearchParams(temp_user);
@@ -157,7 +178,11 @@ app.post("/process_purchase", function (request, response) {
     } else if (Object.keys(errorObject).length > 0) {
         response.redirect("./product_display.html?" + qs.stringify(POST) + `&inputErr`);
     }
-});
+});*/
+
+app.post('/get_cart', function (request, response) {
+    response.json(request.session.cart);
+})
 
 app.post ('/process_login', function(request,response) {
     let POST = request.body;
@@ -168,12 +193,32 @@ app.post ('/process_login', function(request,response) {
         request.query.loginErr = 'Both email adreess and password are required.'
         } else if (user_data[entered_email]) {
             if (user_data[entered_email].password ==  entered_password) {
-                temp_user['email'] = entered_email
-                temp_user['name'] = user_data[entered_email].name;
+                if (user_data[entered_email].password == entered_password) {
+                    user_data[entered_email].status = true;
+                    //add user to status object to keep track of loffed in useres
+                    status[entered_email] = true;
+                }
+                //store user email and name in cookie
+                let user_cookie= {"email": entered_email, "name": user_data[entered_email]['name']};
 
-                let params = new URLSearchParams (temp_user);
-                response.redirect(`/invoice.html?valid&${params.toString()}`);
+                //response with isers cookie as JSON string and expir set to 15 min
+                response.cookie('user_cookie', JSON.stringify(user_cookie), {maxAge: 900 * 1000});
+                console.log(user_cookie);
+
+                /*//update the number of active useres
+                request.session.users = Object.keys(status).length;
+                console/log(`Current users: ${Object.keys(status).length} - ${Object.keys(status)});
+                */
+
+                //async write updated user_data and products to their respect files
+                fs.writeFile(__dirname + filename, JSON.stringify(user_data), 'utf-8', (err) => {
+                    if (err) throw err;
+                });
+
+                //redir to cart user select quant is storeed in the session cart
+                response.redirect(`/cart.html?`);
                 return;
+
             } else if (entered_password ==0) {
                 request.query.loginErr = 'Password field can not be blank';
             } else {
@@ -187,12 +232,12 @@ app.post ('/process_login', function(request,response) {
         response.redirect(`login.html?${params.toString()}`);
 });
 
-app.post ('/continue_shopping', function(request,response) {
+/*app.post ('/continue_shopping', function(request,response) {
    let params = new URLSearchParams(temp_user) ;
    response.redirect(`/product_display.html?${params.toString()}`);
-})
+})*/
 
-app.post ('/purchase_logout', function(request, response) {
+/*app.post ('/purchase_logout', function(request, response) {
     for (let i in products) {
         products[i].qty_sold += Number(temp_user[`qty${i}`]);
         products[i].qty_available -= Number(temp_user[`qty${i}`]);
@@ -211,7 +256,7 @@ delete temp_user['email'];
 delete temp_user['name'];
 
     response.redirect('/product_display.html');
-})
+})*/
 
 //same function as temp_user
 let registration_errors = {};
@@ -236,9 +281,11 @@ app.post('/process_register', function (request, response) {
     // response from server to ck if no err
     if (Object.keys(registration_errors).length == 0) {
         // creating new object in the user_data object
-        user_data[reg_email] = {};
-        user_data[reg_email].name = reg_name;
-        user_data[reg_email].password = reg_password;
+        user_data[reg_email] = {
+            "name": reg_name,
+            "password": reg_password,
+            "status": true
+        };
 
         // async writing new user_data to proper files
         fs.writeFile(__dirname + '/user_data.json', JSON.stringify(user_data), 'utf-8', (err) => {
@@ -247,16 +294,9 @@ app.post('/process_register', function (request, response) {
             } else {
                 console.log('User data has been updated!');
 
-                // add user info to temp
-                temp_user['name'] = reg_name;
-                temp_user['email'] = reg_email;
+                status[reg_email]=true;
 
-                // con log ck
-                console.log(temp_user);
-                console.log(user_data);
-
-                let params = new URLSearchParams(temp_user);
-                response.redirect(`/invoice.html?regSuccess&valid&${params.toString()}`);
+                response.redirect(`/login.html`);
             }
         });
     } else {
@@ -364,6 +404,79 @@ function validateConfirmPassword(confirm_password, password) {
         registration_errors['confirm_password_type'] = 'Passwords do not match.';
     }
 }
+
+app.post('/add_to_cart', function (request, response) {
+    //post the content of request route
+    let POST = request.body;
+
+    //get product_key from hidden input box
+    let products_key = POST['products_key']
+
+    //create object to store error messages
+    let errorObject = {};
+
+    for (let i in products[products_key]) {
+        //retrieve users quant inputs
+        let wty = POST[`qty${[i]}`];
+
+        //If invalid quantity submit set name=value pairs in errobj as errMsg
+        let errorMessages = validateQuantity(qty, products[products_key][i].qty_available);
+        if (errorMessages.length > 0) {
+            //store error in errobh to pass in URL
+            errorObject[`qty${[i]}_error`] = errorMessages.join(',');
+        }
+        console.log('error messages are:' + errorMessages);
+    }
+    console.log("errorObjext = "+Object.keys(errorObject)+ " " +Object.keys(errorObject).length);
+
+    //if no errors
+    if (Object.keys(errorObject).length ==0) {
+        //if session cart not exist
+        if (!request.session.cart) {
+            //create one
+            request.session.cart = {};
+        }
+
+    //if session cart array for prod cat not exist
+    if (typeof request.session.cart[products_key] == 'undefined') {
+        //create one
+        request.session.cart[products_key] = [];
+    }
+
+    //make array to store quantits useres input
+    let user_qty = [];
+
+    for (let i in products[products_key]) {
+        //push users inpuit tnto array
+        user_qty.push(Number(POST[`qty${i}`]));
+    }
+
+    //set user_qty in session
+    request.session.cart[products_key] = user_qty;
+
+    response.redirect(`/products.html?products_key=${POST['products_key']}`);
+    }
+    //if erroe
+    else if (Object.keys(errorObject).length > 0) {
+        response.redirect(`/products.html?${qs.stringify(POST)}&inputErr`);
+    }
+
+})
+
+app.post('/update_shopping_cart', function (request, response) {
+})
+
+app.post('/continue', function (request, response) {
+})
+
+app.post('/checkout', function (request, response) {
+})
+
+app.post('/complete_purchase', function (request, response) {
+})
+
+app.post('/process_logout', function (request, response) {
+})
 
 // Start the server; listen on port 8080 for incoming HTTP requests
 server.listen(8080, () => console.log(`listening on port 8080`));
