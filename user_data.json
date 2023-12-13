@@ -1,9 +1,11 @@
 {
     "rikkir@hawaii.edu":{
         "name": "Rik", 
-        "password":"qwer"
+        "password":"qwer",
+        "status": false
     },
     "itm352@hawaii.edu":{
         "name":"ITM 352",
-        "password":"grader"}
+        "password":"grader"},
+        "status": false
 }
