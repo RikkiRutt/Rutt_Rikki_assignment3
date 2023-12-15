@@ -112,6 +112,10 @@ app.post ('/process_login', function(request,response) {
         
         //if email matches with exist err
         else if  (user_data[entered_email]) {
+            console.log('Entered Email:', entered_email); 
+            console.log('user_data exists for entered_email:', entered_email);
+            console.log('user_data[entered_email]:', user_data[entered_email]);
+
             //if stored encryp password matches with encryp inutted pw
             if (user_data[entered_email].password == entered_password) {
                 if (user_data[entered_email].status == false) {
