@@ -1,6 +1,103 @@
 ////code used from sal, chat, and bing chat gpt
 //product card
 for (let i in products[products_key]) {
+
+}
+
+// Update the window.onload function to handle WebSocket messages
+window.onload = function () {
+    console.log('window.onload function called');
+
+    // Check for server-side validation errors
+    if (params.has('error')) {
+        document.getElementById('errMsg').innerHTML = 'No quantities selected.';
+        setTimeout(() => {
+            document.getElementById('errMsg').innerHTML = '';
+        }, 2000);
+    } else if (params.has('inputErr')) {
+        document.getElementById('errMsg').innerHTML = 'Please fix the quantity errors before proceeding.';
+        setTimeout(() => {
+            document.getElementById('errMsg').innerHTML = '';
+        }, 2000);
+
+        for (let i in products) {
+            let qtyInput = document.querySelector(`#qty${i}_entered`);
+            if (!qtyInput) {
+                console.error(`Qty input not found for product ${i}`);
+                continue; // Skip to the next iteration if the input is not found
+            }
+
+                // Make input boxes sticky (for valid quantities) after returning from the cart
+    if ((typeof shopping_cart[products_key] != 'undefined') && (params.has('inputErr') != true)) {
+        for (let i in shopping_cart[products_key]) {
+            if (shopping_cart[products_key][i] == 0) {
+                document.getElementById(`qty${[i]}`).value = '';
+            } 
+            else {
+                document.getElementById(`qty${[i]}`).value = shopping_cart[products_key][i];
+            }
+        }
+    }
+
+            let storedInvalidQty = localStorage.getItem(`invalidQty_${i}`);
+
+            if (storedInvalidQty !== null) {
+                // Convert the stored quantity to a valid non-negative integer
+                let storedQuantity = Number(storedInvalidQty);
+                if (!isNaN(storedQuantity) && storedQuantity >= 0 && Number.isInteger(storedQuantity)) {
+                    // Set the input field's value to the stored valid quantity
+                    qtyInput.value = storedQuantity;
+
+                    // Validate and display the error message for the stored valid quantity
+                    validateAndDisplayMessage(qtyInput, products[i].qty_available);
+                } else {
+                    // Remove the stored invalid quantity from local storage
+                    localStorage.removeItem(`invalidQty_${i}`);
+                }
+            } else if (params.has(`qty${i}`)) {
+                // Set the input field's value to the quantity from the URL parameters
+                qtyInput.value = params.get(`qty${i}`);
+            }
+
+            // Validate and display error messages for the current input field
+            let qtyError = document.getElementById(`qty${[i]}_error`);
+            if (!qtyError) {
+                console.error(`Qty error element not found for product ${i}`);
+                continue; // Skip to the next iteration if the error element is not found
+            }
+
+            let errorMessages = validateQuantity(qtyInput.value, products[i].qty_available);
+
+            if (errorMessages.length > 0) {
+                qtyError.innerHTML = errorMessages.join('<br>');
+                qtyInput.parentElement.style.borderColor = 'red';
+            } else {
+                qtyError.innerHTML = '';
+                qtyInput.parentElement.style.borderColor = 'black';
+            }
+        }
+    }
+    if (params.has('name')) {
+        document.getElementById('helloMsg').innerHTML = `Thank You ${params.get('name')} we appreciate your business!`;
+        for (let i in products) {
+            qty_form[`qty${i}`].value = params.get(`qty${i}`);
+        }
+    }
+};
+
+    // Function to update the displayed quantity available
+    function updateQuantityAvailable(productId, quantityAvailable) {
+        const qtyAvailableElement = document.querySelector(`#qty${productId}_available`);
+        if (qtyAvailableElement) {
+            qtyAvailableElement.textContent = `Available: ${quantityAvailable}`;
+        }
+    };
+
+// Odd added code in this section before client-side validation was gpt to get the blue message for valid quantitys input
+// Populate the DOM Form with the product details
+let productRow = document.querySelector('.row'); // Get the product row outside the loop
+
+for (let i = 0; i < products[products_key].length; i++) {
     // Create a product card for each product
     let productCard = document.createElement('div');
     productCard.className = 'col-md-4 product_card';
@@ -49,63 +146,6 @@ for (let i in products[products_key]) {
             </table>
         </div>  
     `;
-
-}
-
-
-window.onload = function() {
-    // Get the URL
-    //let params = (new URL(document.location)).searchParams;
-    /* If there is a server side validation error
-    Display message to user and allow them to edit their inputs
-    User input is made sticky by retrieving quantities from the URL 
-    Those inputs are validated again */
-
-
-    if (params.has('error')) {
-        document.getElementById('errMsg').innerHTML = "No quantities selected.";
-        setTimeout(() => {
-            document.getElementById('errMsg').innerHTML = "";
-        }, 4000);
-    } 
-    else if (params.has('inputErr')) {
-        alert("input error");
-        document.getElementById('errMsg').innerHTML = "Please fix errors before proceeding."
-        setTimeout(() => {
-            document.getElementById('errMsg').innerHTML = "";
-        }, 4000);
-
-        for (let i in products[products_key]) {
-            if (params.get(`qty${i}`) == 0) {
-                qty_form[`qty${i}`].value = '';
-            } else {
-                qty_form[`qty${i}`].value = params.get(`qty${i}`);
-                qty_form[`qty${i}`].parentElement.style.borderColor = "red";
-            }
-            errors = validateQuantity(params.get(`qty${i}`), products[products_key][i].qty_available);
-            document.getElementById(`qty${i}_error`).innerHTML = errors.join('');  
-            alert(errors);
-        }
-    }
-
-    // Make input boxes sticky (for valid quantities) after returning from the cart
-    if ((typeof shopping_cart[products_key] != 'undefined') && (params.has('inputErr') != true)) {
-        for (let i in shopping_cart[products_key]) {
-            if (shopping_cart[products_key][i] == 0) {
-                document.getElementById(`qty${[i]}`).value = '';
-            } 
-            else {
-                document.getElementById(`qty${[i]}`).value = shopping_cart[products_key][i];
-            }
-        }
-    }
-}
-
-// Odd added code in this section before client-side validation was gpt to get the blue message for valid quantitys input
-// Populate the DOM Form with the product details
-let productRow = document.querySelector('.row'); // Get the product row outside the loop
-
-for (let i = 0; i < products[products_key].length; i++) {
 
     // Add the product card to the row
     productRow.appendChild(productCard);
