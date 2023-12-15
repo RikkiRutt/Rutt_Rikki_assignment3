@@ -2,10 +2,7 @@
 //added from chat for dynamic update using websocket
 const express = require('express');
 const http = require('http');
-const WebSocket = require('ws');
 const qs = require('querystring');
-
-
 const app = express();
 
 /* Used to keep track of diffrent users data as go from page to page
@@ -19,7 +16,6 @@ const session = require('express-session');
 app.use(session({secret: "myNotSoSecretKey", resave: true, saveUninitialized: true}));
 
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
 
 /* git cookie
 require the cookie parser middleware
@@ -47,20 +43,6 @@ app.all('*', function (request, response, next) {
 
 // Serve static files from the "public" directory
 app.use(express.static(__dirname + '/public'));
-
-// WebSocket server setup
-wss.broadcast = function broadcast(data) {
-    wss.clients.forEach(function each(client) {
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(data);
-        }
-    });
-};
-
-// Handle WebSocket connections
-wss.on('connection', function connection(ws) {
-    console.log('Client connected');
-});
 
 // Load product data from a JSON file
 const products = require(__dirname + "/products.json");
@@ -128,59 +110,8 @@ if (fs.existsSync(filename)) {
     user_data = {};
 }
 
-
-/* Initialize quantity sold for each product
-for (let i in products) {
-    products[i].qty_sold = 0; // Corrected this line
-}*/
-
 //stores inputs temp to be sent ahead
 let temp_user={};
-
-// Process purchase requests
-/*app.post("/process_purchase", function (request, response) {
-    let POST = request.body;
-    let hasQty = false;
-    let errorObject = {};
-
-    // Iterate through products to validate quantities
-    for (let i in products) {
-        let qty = POST[`qty${i}`]; 
-        hasQty = hasQty || (qty > 0);
-        let errorMessages = validateQuantity(qty, products[i].qty_available);
-
-        if (errorMessages.length > 0) {
-            errorObject[`qty${i}_error`] = errorMessages.join(',');
-        }
-    }
-
-    // Check if all quantities are valid before processing the purchase
-    if (!hasQty && Object.keys(errorObject).length === 0) {
-        response.redirect("./product_display.html?error");
-    } else if (hasQty && Object.keys(errorObject).length === 0) {
-        // Check quantities against the server's current state before processing the purchase
-        const isValidPurchase = checkQuantitiesOnServer(POST);
-        
-        if (isValidPurchase) {
-            // Update product quantities and broadcast changes
-            for (let i in products) {
-                temp_user[`qty${i}`]= POST[`qty${i}`];
-
-                //adjusted for after purchase on invoice
-                /*products[i].qty_sold += Number(qty);
-                products[i].qty_available -= Number(qty); 
-            }
-            wss.broadcast(JSON.stringify(products));
-            let params = new URLSearchParams(temp_user);
-            response.redirect(`./login.html?${params.toString()}`);
-        } else {
-            // Redirect with an error message if quantities are no longer available on the server
-            response.redirect("./product_display.html?unavailable");
-        }
-    } else if (Object.keys(errorObject).length > 0) {
-        response.redirect("./product_display.html?" + qs.stringify(POST) + `&inputErr`);
-    }
-});*/
 
 app.post('/get_cart', function (request, response) {
     response.json(request.session.cart);
@@ -233,32 +164,6 @@ app.post ('/process_login', function(request,response) {
         let params = new URLSearchParams (request.query);
         response.redirect(`login.html?${params.toString()}`);
 });
-
-/*app.post ('/continue_shopping', function(request,response) {
-   let params = new URLSearchParams(temp_user) ;
-   response.redirect(`/product_display.html?${params.toString()}`);
-})*/
-
-/*app.post ('/purchase_logout', function(request, response) {
-    for (let i in products) {
-        products[i].qty_sold += Number(temp_user[`qty${i}`]);
-        products[i].qty_available -= Number(temp_user[`qty${i}`]);
-    }
-
-    fs.writeFile(__dirname+'/products.json', JSON.stringify(products), 'utf-8', (err) => {
-        if (err) {
-            console.error('Error updating products data',err);
-        } else {
-            console.log('Products data has been updated')
-        }
-    });
-
-//removing user login from temp
-delete temp_user['email'];
-delete temp_user['name'];
-
-    response.redirect('/product_display.html');
-})*/
 
 //same function as temp_user
 let registration_errors = {};
@@ -419,7 +324,7 @@ app.post('/add_to_cart', function (request, response) {
 
     for (let i in products[products_key]) {
         //retrieve users quant inputs
-        let wty = POST[`qty${[i]}`];
+        let qty = POST[`qty${[i]}`];
 
         //If invalid quantity submit set name=value pairs in errobj as errMsg
         let errorMessages = validateQuantity(qty, products[products_key][i].qty_available);
