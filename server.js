@@ -305,10 +305,11 @@ function validatePassword(password) {
 function validateConfirmPassword(confirm_password, password) {
     delete registration_errors['confirm_password_type'];
 
-    console.log(registration_errors);
+    
 
     if (confirm_password !== password) {
         registration_errors['confirm_password_type'] = 'Passwords do not match.';
+        console.log(registration_errors);
     }
 }
 
