@@ -1,74 +1,21 @@
 // PRINT PRODUCT CARDS
 for (let i in products[products_key]) {
     document.querySelector('.row').innerHTML += `
-        <div class="col-md-6 product_card" style="margin-bottom: 40px; padding: 15px;">
+        <div class="col-md-4 product_card" style="margin-bottom: 40px; padding: 30px;">
             <div>
                 <h5 style="float: left;" class="product_name">${products[products_key][i].model}</h5>
                 <h5 style="float: right;">$${(products[products_key][i].price).toFixed(2)}</h5>
             </div>  
-            <img src="${products[products_key][i].image}" style="width: 75%" class="img-thumbnail">
+            <img src="${products[products_key][i].image}" style="width: 300px; height: 250px;" class="img-thumbnail">
             <div style="height: 90px;">
                 <table style="width: 100%; text-align: center; font-size: 18px;" id="product_table">
                     <tr>
                         <td style="text-align: left; width: 35%;">Available: ${products[products_key][i].qty_available}</td>
 
-                        <td style="text-align: center; width: 35%;" rowspan="2">
-                            <div style="border-radius: 50px; border: 2px solid black; width: 70%; height: 40px; float: right;">
-                                <button type="button" class="qtyButton highlight" onclick="document.getElementById('qty${[i]}').value--; checkInputTextbox(qty${[i]});">--</button>
-
-                                <input type="text" autocomplete="off" placeholder="0" name="qty${[i]}" id="qty${[i]}" class="inputBox" onkeyup="checkInputTextbox(this)" style="background-color: #f7fcff">
-
-                                <button type="button" class="qtyButton highlight" onclick="document.getElementById('qty${[i]}').value++; checkInputTextbox(qty${[i]});">+</button>
-                            </div>
-
-                            <p id="qty${[i]}_label" style="margin: 6px 0; float: right; padding-right: 10px;">Qty:</p>
-                        </td>
+                        <!-- Label for quantity -->
+                    <td style="text-align: center; width: 75%;"><label id="qty${[i]}_label" style="margin: 6px 0; padding-right: 10px;">Qty:</label></td>
                     </tr>
                     <tr>
-                        <td style="text-align: left; width: 35%;" id="qty_sold${i}">Sold: ${products[products_key][i].qty_sold}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" style="padding-top: 10px;">
-                            <input type="submit" value="Add to cart" class="sm-button highlight">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" style="padding-top: 5px;"><div id="qty${[i]}_error" style="color: #ff2e2e;"></div></td>
-                    </tr>
-                </table>
-            </div> 
-            <br>
-        </div>
-        
-    `;
-}
-
-////code used from sal, chat, and bing chat gpt
-//product card
-/*
-for (let i in products[products_key]) {
-    // Create a product card for each product
-    let productCard = document.createElement('div');
-    productCard.className = 'col-md-4 product_card';
-    productCard.style = 'margin-bottom: 40px; padding: 30px;';
-
-    productCard.innerHTML = `
-        <div>
-            <h5 class="product_name"><b>${products[products_key][i].model}</b></h5>
-            <h5>$${(products[products_key][i].price).toFixed(2)}</h5>
-        </div>  
-        <img src="${products[products_key][i].image}" style="width: 300px; height: 250px;" class="img-thumbnail" alt="${products[products_key][i].alt}">
-        <div style="height: 90px;">
-            <table style="width: 100%; text-align: center; font-size: 18px;" id="product_table">
-                <tr>
-                    <!-- Display available quantity for the product -->
-                    <td style="text-align: left; width: 35%;">Available: ${products[products_key][i].qty_available}</td>
-
-                    <!-- Label for quantity -->
-                    <td style="text-align: left; width: 75%;"><label id="qty${[i]}_label" style="margin: 6px 0; padding-right: 10px;">Qty:</label></td>
-                </tr>
-                <tr>
-                    <!-- Display sold quantity for the product -->
                     <td style="text-align: left; width: 35%;" id="qty_sold${i}">Sold: ${products[products_key][i].qty_sold}</td>
 
                     <!-- Input field for quantity and buttons to increase/decrease -->
@@ -82,22 +29,31 @@ for (let i in products[products_key]) {
 
                             <!-- Increase quantity button with an onclick event -->
                             <button type="button" class="qtyButton highlight" style="background-color: transparent; border: none; cursor: pointer; padding: 5px 10px; font-size: 30px; margin-bottom: 7px;" onclick="changeQuantity(${i}, 1)">+</button>
-                        </div>
+                        </div>                            
+                        </td>
+                        <td colspan="3" style="padding-top: 10px;">
+                        <input type="submit" value="Add to cart" class="sm-button highlight">
                     </td>
-                    <td colspan="3" style="padding-top: 10px;">
-                    <input type="submit" value="Add to cart" class="sm-button highlight">
-                </td>
-                </tr>
-                <tr>
-                    <!-- Error message for quantity validation -->
-                    <td colspan="3" style="padding-top: 60px;"><div id="qty${[i]}_error" style="color: red;"></div></td>
-                </tr>
-            </table>
-        </div>  
-    `;
+                    </tr>
+                    <tr>
+                        
+                    </tr>
+                    <tr>
 
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding-top: 5px;"><div id="qty${[i]}_error" style="color: #ff2e2e;"></div></td>
+                    </tr>
+                </table>
+            </div> 
+            <br>
+        </div>
+        
+    `;
 }
-*/
+
+////code used from sal, chat, and bing chat gpt
+
 
 window.onload = function() {
     // Get the URL
