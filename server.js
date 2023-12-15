@@ -103,6 +103,7 @@ let temp_user = {};
 
 app.post ('/process_login', function(request,response) {
     let POST = request.body;
+    console.log('POST:', POST);
     let entered_email = POST['email'].toLowerCase();
     let entered_password = POST['password'];
 
