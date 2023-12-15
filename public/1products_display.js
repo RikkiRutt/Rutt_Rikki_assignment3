@@ -1,51 +1,5 @@
-// PRINT PRODUCT CARDS
-for (let i in products[products_key]) {
-    document.querySelector('.row').innerHTML += `
-        <div class="col-md-6 product_card" style="margin-bottom: 40px; padding: 15px;">
-            <div>
-                <h5 style="float: left;" class="product_name">${products[products_key][i].model}</h5>
-                <h5 style="float: right;">$${(products[products_key][i].price).toFixed(2)}</h5>
-            </div>  
-            <img src="${products[products_key][i].image}" style="width: 75%" class="img-thumbnail">
-            <div style="height: 90px;">
-                <table style="width: 100%; text-align: center; font-size: 18px;" id="product_table">
-                    <tr>
-                        <td style="text-align: left; width: 35%;">Available: ${products[products_key][i].qty_available}</td>
-
-                        <td style="text-align: center; width: 35%;" rowspan="2">
-                            <div style="border-radius: 50px; border: 2px solid black; width: 70%; height: 40px; float: right;">
-                                <button type="button" class="qtyButton highlight" onclick="document.getElementById('qty${[i]}').value--; checkInputTextbox(qty${[i]});">--</button>
-
-                                <input type="text" autocomplete="off" placeholder="0" name="qty${[i]}" id="qty${[i]}" class="inputBox" onkeyup="checkInputTextbox(this)" style="background-color: #f7fcff">
-
-                                <button type="button" class="qtyButton highlight" onclick="document.getElementById('qty${[i]}').value++; checkInputTextbox(qty${[i]});">+</button>
-                            </div>
-
-                            <p id="qty${[i]}_label" style="margin: 6px 0; float: right; padding-right: 10px;">Qty:</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="text-align: left; width: 35%;" id="qty_sold${i}">Sold: ${products[products_key][i].qty_sold}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" style="padding-top: 10px;">
-                            <input type="submit" value="Add to cart" class="sm-button highlight">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" style="padding-top: 5px;"><div id="qty${[i]}_error" style="color: #ff2e2e;"></div></td>
-                    </tr>
-                </table>
-            </div> 
-            <br>
-        </div>
-        
-    `;
-}
-
 ////code used from sal, chat, and bing chat gpt
 //product card
-/*
 for (let i in products[products_key]) {
     // Create a product card for each product
     let productCard = document.createElement('div');
@@ -97,7 +51,7 @@ for (let i in products[products_key]) {
     `;
 
 }
-*/
+
 
 window.onload = function() {
     // Get the URL
