@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.querySelector('#cart_info').innerHTML += `
                     <table class="cartItems">
                         <tr>
-                            <td colspan="3" style="text-align: center; padding: 5px;">${products[products_key][i].name}</td>
+                            <td colspan="3" style="text-align: center; padding: 5px;">${products[products_key][i].model}</td>
                         </tr>
                         <tr>
                             <td rowspan="4" style="padding: 5px; width: 45%;"">
