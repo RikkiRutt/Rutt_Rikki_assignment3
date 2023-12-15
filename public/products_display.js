@@ -24,8 +24,12 @@ for (let i in products[products_key]) {
                 </td>
             </tr>
             <tr>
-                <td colspan="3" style="padding-top: 60px;"><div id="qty${[i]}_error" style="color: red;"></div></td>
-            </tr>
+            <td colspan="3" style="padding-top: 60px;">
+                <div id="qty${[i]}_error" style="color: red;"></div>
+                <!-- Add to Cart Button -->
+                <input type="submit" value="Add to cart" class="button">
+            </td>
+        </tr>
         </table>
     </div>  
     <br>
