@@ -32,7 +32,7 @@ for (let i in products[products_key]) {
                             <button type="button" class="qtyButton highlight" style="background-color: transparent; border: none; cursor: pointer; padding: 5px 10px; font-size: 40px; margin-bottom: 11px;" onclick="changeQuantity(${i}, -1)">-</button>
 
                             <!-- Input field for quantity -->
-                            <input type="text" autocomplete="off" placeholder="0" name="qty${[i]}" id="qty${[i]}_entered" class="inputBox" style="background-color: transparent; border: none; width: 30px; text-align: center; margin: 0 10px; border: none;" oninput="validateAndDisplayMessage(this, ${products[i].qty_available})">
+                            <input type="text" autocomplete="off" placeholder="0" name="qty${[i]}" id="qty${[i]}_entered" class="inputBox" style="background-color: transparent; border: none; width: 30px; text-align: center; margin: 0 10px; border: none;" oninput="validateAndDisplayMessage(this, ${products[products_key][i].qty_available})">
 
                             <!-- Increase quantity button with an onclick event -->
                             <button type="button" class="qtyButton highlight" style="background-color: transparent; border: none; cursor: pointer; padding: 5px 10px; font-size: 30px; margin-bottom: 7px;" onclick="changeQuantity(${i}, 1)">+</button>
@@ -101,15 +101,6 @@ window.onload = function() {
     }
 }
 
-// Odd added code in this section before client-side validation was gpt to get the blue message for valid quantitys input
-// Populate the DOM Form with the product details
-let productRow = document.querySelector('.row'); // Get the product row outside the loop
-
-for (let i = 0; i < products[products_key].length; i++) {
-
-    // Add the product card to the row
-    productRow.appendChild(productCard);
-}
 
 // Function to handle quantity changes
 function changeQuantity(index, delta) {
