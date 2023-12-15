@@ -43,13 +43,12 @@ loadJSON('/get_cart', function (response) {
         totalItemsInCart += productTotalQuantity;
     }
 });
-/*
+
 /// ACTIVE USERS ///
 let users = 0;
 loadJSON('/get_users', function (response) {
     users = response;
-}) */
-
+})
 // Switched from window.onload because of issues with loading resources taking too long and not triggering the window.onload event
 document.addEventListener('DOMContentLoaded', function () {
     // If the user's cookie exists

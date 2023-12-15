@@ -1,5 +1,8 @@
 //code used from chat and sal
+//added from chat for dynamic update using websocket
 const express = require('express');
+const http = require('http');
+const qs = require('querystring');
 const app = express();
 
 /* Used to keep track of diffrent users data as go from page to page
@@ -8,19 +11,21 @@ resave: forces session to be saved back to the session store
 saveUninitializedL forces a session that is "uninitialized" to be saved to the store
 uninitialized session is a new and not modified session
 */
+
 const session = require('express-session');
 app.use(session({secret: "myNotSoSecretKey", resave: true, saveUninitialized: true}));
+
+const server = http.createServer(app);
 
 /* git cookie
 require the cookie parser middleware
 parses the cookie header and pops req.cookies with an objext keyed by cookie name
 */
 const cookieParser = require('cookie-parser');
-const {request, maxHeaderSize} = require('http');
+const {request} = require('http');
 app.use(cookieParser());
 
-const qs = require('querystring');
-
+// Middleware to log all requests
 app.all('*', function (request, response, next) {
     console.log(request.method + ' to ' + request.path);
 
@@ -36,24 +41,28 @@ app.all('*', function (request, response, next) {
     next();
 });
 
-
-
+// Serve static files from the "public" directory
 app.use(express.static(__dirname + '/public'));
-app.listen(8080, () => console.log(`listening on port 8080`));
 
+// Load product data from a JSON file
 const products = require(__dirname + "/products.json");
-for (let category in products) {
-    //create qty sold key for each pro
-    products[category].forEach((prod, i) => {prod.qty_sold = 0});
-}
 
+// Serve product data as JavaScript
 app.get('/products.js', function (request, response, next) {
     response.type('.js');
     let productsStr = `let products = ${JSON.stringify(products)};`;
     response.send(productsStr);
+    console.log(productsStr);
 });
-app.use(express.urlencoded({extended: true}));
 
+// Parse POST data for processing purchases
+app.use(express.urlencoded({
+    extended: true
+}));
+
+let status = {};
+
+// Function to validate quantity entered by user against available quantity
 function validateQuantity(quantity, availableQuantity) {
     let errors = [];
 
@@ -74,32 +83,39 @@ function validateQuantity(quantity, availableQuantity) {
     return errors;
 }
 
-const fs = require('fs'); //allow use of node fs module to read and write
-const filename = 'user_data.json'; //dummy varri file name for use data json
-
-let status = {}; //store user stats data
-let user_data; //globa vari to hold user data from user)data.json and anything added later
-
-
-if (fs.existsSync(filename)) {
-    //read file and store the inforanmtion in vari data
-    let data = fs.readFileSync(filename, 'utf-8');
-    //parse info into json format and store as userdata
-    user_fata =JSON.parse(data);
-    console.log(user_data);
-} else {
-    console.log(`${filename} does not exist`);
-    user_data; //global vari to hold user data from user_data json
+// Function to check quantities against the server's current state
+function checkQuantitiesOnServer(POST) {
+    for (let i in products) {
+        let qty = POST[`qty${i}`];
+        if (Number(qty) > products[i].qty_available) {
+            return false; // Return false if any quantity is no longer available on the server
+        }
+    }
+    return true; // Return true if all quantities are valid
 }
 
-//define route for handling post request to path '/get_cart
-//respof to request withj cart stored in user session
+//addtions for a2
+let user_data;
+
+const fs=require('fs');
+const e = require('express');
+const { json } = require('body-parser');
+const filename= __dirname + '/user_data.json';
+if (fs.existsSync(filename)) {
+    let data=fs.readFileSync(filename, 'utf-8');
+    user_data = JSON.parse(data);
+    console.log(user_data);
+} else {
+    console.log(`${filename} does not exist.`);
+    user_data = {};
+}
+
+//stores inputs temp to be sent ahead
+let temp_user={};
+
 app.post('/get_cart', function (request, response) {
     response.json(request.session.cart);
 })
-
-//temp storage for user inputs
-let temp_user = {};
 
 app.post ('/process_login', function(request,response) {
     let POST = request.body;
@@ -107,23 +123,18 @@ app.post ('/process_login', function(request,response) {
     let entered_password = POST['password'];
 
     if (entered_email.length == 0 && entered_password == 0) {
-        request.query.loginErr = 'Both email adreess and password are required.';
-        } 
-        
-        //if email matches with exist err
-        else if  (user_data[entered_email]) {
-            //if stored encryp password matches with encryp inutted pw
-            if (user_data[entered_email].password == entered_password) {
-                if (user_data[entered_email].status == false) {
+        request.query.loginErr = 'Both email adreess and password are required.'
+        } else if (user_data[entered_email]) {
+            if (user_data[entered_email].password ==  entered_password) {
+                if (user_data[entered_email].password == entered_password) {
                     user_data[entered_email].status = true;
-                    //add user to status objuset to keep track of logged in useres
+                    //add user to status object to keep track of loffed in useres
                     status[entered_email] = true;
                 }
-                    
                 //store user email and name in cookie
                 let user_cookie= {"email": entered_email, "name": user_data[entered_email]['name']};
 
-                //response with users cookie as joson string and set expriation to 15 min
+                //response with isers cookie as JSON string and expir set to 15 min
                 response.cookie('user_cookie', JSON.stringify(user_cookie), {maxAge: 900 * 1000});
                 console.log(user_cookie);
 
@@ -132,30 +143,23 @@ app.post ('/process_login', function(request,response) {
                 console/log(`Current users: ${Object.keys(status).length} - ${Object.keys(status)});
                 */
 
-                // async writing new user_data to proper files
+                //async write updated user_data and products to their respect files
                 fs.writeFile(__dirname + filename, JSON.stringify(user_data), 'utf-8', (err) => {
-                    if (err)  throw err;
-                    console.log('User data has been updated!', err);
+                    if (err) throw err;
                 });
 
-                //redir to cart the useres selected quantits is store in session cart
+                //redir to cart user select quant is storeed in the session cart
                 response.redirect(`/cart.html?`);
                 return;
-            } 
-            //if email exisit in user data but email empty
-            else if (entered_password.length == 0) {
-                request.query.loginErr = 'Password field cannont be empty.';
+
+            } else if (entered_password ==0) {
+                request.query.loginErr = 'Password field can not be blank';
+            } else {
+                request.query.loginErr = 'Incorrect password';
             }
-            // If email exists in user data put pw invalid
-            else {
-                request.query.loginErr = 'Invalid password.';
-            }  
+        } else {
+            request.query.loginErr = 'Invalid Email';
         }
-        //if email doe not exist in userdata
-        else {
-            request.query.loginErr = 'Invalid email.';
-        } 
-        //return email input to make input box sticky 
         request.query.email = entered_email;
         let params = new URLSearchParams (request.query);
         response.redirect(`login.html?${params.toString()}`);
@@ -308,6 +312,7 @@ function validateConfirmPassword(confirm_password, password) {
         console.log(registration_errors);
     }
 }
+
 app.post('/add_to_cart', function (request, response) {
     //post the content of request route
     let POST = request.body;
@@ -546,3 +551,8 @@ app.post('/process_logout', function (request, response) {
         response.redirect('/index.html?');
     }
 })
+
+// Start the server; listen on port 8080 for incoming HTTP requests
+server.listen(8080, () => console.log(`listening on port 8080`));
+
+
