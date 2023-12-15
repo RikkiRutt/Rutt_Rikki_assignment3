@@ -426,9 +426,9 @@ app.post('/complete_purchase', function (request, response) {
             
         let qty = shopping_cart[product_key][i];
     
-    products[product_key][i].qty_sold += Number(qty);
-products[product_key][i].qty_available -= Number(qty) || 0;
-}
+        products[product_key][i].qty_sold += Number(qty);
+        products[product_key][i].qty_available -= Number(qty) || 0;
+    }
     }
 
     //async write updates prod to product.json
