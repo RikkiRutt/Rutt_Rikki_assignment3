@@ -451,7 +451,7 @@ app.post('/complete_purchase', function (request, response) {
                 let extended_price = qty * products[products_key][i].price;
                 subtotal += `
                 <tr>
-                    <td>${products[products_key][i].name}</td>
+                    <td>${products[products_key][i].model}</td>
                     <td>${qty}</td>
                     <td>${products[products_key][i].qty_available - qty}</td>
                     <td>$${products[products_key][i].price.toFixed(2)}</td>
