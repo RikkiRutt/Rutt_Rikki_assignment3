@@ -85,50 +85,13 @@ window.onload = function () {
     }
 };
 
-// Add this line to create a WebSocket connection
-const socket = new WebSocket('ws://localhost:8080');
-
-// WebSocket Handling
-socket.addEventListener('open', function (event) {
-    console.log('WebSocket connection opened:', event);
-
-    // After the WebSocket is open, trigger the rest of the window.onload code
-    window.dispatchEvent(new Event('websocket_open'));
-});
-
-socket.addEventListener('message', function (event) {
-    const data = JSON.parse(event.data);
-    updateQuantityAvailable(data.productId, data.quantityAvailable);
-});
-
-socket.addEventListener('close', function (event) {
-    if (event.wasClean) {
-        console.log(`Closed cleanly, code=${event.code}, reason=${event.reason}`);
-    } else {
-        console.error('Connection died');
-    }
-});
-
-socket.addEventListener('error', function (error) {
-    console.error('WebSocket Error:', error);
-});
-
-// Listen for the custom event to continue the initialization
-window.addEventListener('websocket_open', function () {
-    // WebSocket Handling
-    socket.addEventListener('message', function (event) {
-        const data = JSON.parse(event.data);
-        updateQuantityAvailable(data.productId, data.quantityAvailable);
-    });
-
     // Function to update the displayed quantity available
     function updateQuantityAvailable(productId, quantityAvailable) {
         const qtyAvailableElement = document.querySelector(`#qty${productId}_available`);
         if (qtyAvailableElement) {
             qtyAvailableElement.textContent = `Available: ${quantityAvailable}`;
         }
-    }
-});
+    };
 
 // Odd added code in this section before client-side validation was gpt to get the blue message for valid quantitys input
 // Populate the DOM Form with the product details
