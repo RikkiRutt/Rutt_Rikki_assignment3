@@ -1,6 +1,7 @@
+//code from port/sal
 // This function asks the server for a "service" and converts the response to text. 
 function loadJSON(service, callback) {   
-    let xobj = new XMLHttpRequest();
+    var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
     xobj.open('POST', service, false);
     xobj.onreadystatechange = function () {
@@ -9,15 +10,15 @@ function loadJSON(service, callback) {
             callback(xobj.responseText);
           }
     };
-    xobj.send(null);  
+    xobj.send();  
  }
 
 // This function makes a navigation bar from a products_data object
 
-function nav_bar(this_product_key, products_data) {
+function nav_bar(products_key, products) {
     // This makes a navigation bar to other product pages
-    for (let products_key in products_data) {
-        if (products_key == this_product_key) continue;
-        document.write(`<a href='./product_display.html?products_key=${products_key}'>${products_key}<a>&nbsp&nbsp&nbsp;`);
+    for (let products_key in products) {
+        //if (products_key == this_product_key) continue;
+        document.write(`<a class="nav-link mx-3 highlight" href='/product_display.html?products_key=${products_key}'>${products_key}</a>`);
     }
 }
