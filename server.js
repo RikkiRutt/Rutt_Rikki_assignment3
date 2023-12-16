@@ -1,4 +1,5 @@
 //code used from chat and sal
+//imports express into script
 const express = require('express');
 const app = express();
 
@@ -37,16 +38,17 @@ app.all('*', function (request, response, next) {
 });
 
 
-
+//sets up server and serves file from public directory
 app.use(express.static(__dirname + '/public'));
 app.listen(8080, () => console.log(`listening on port 8080`));
 
+//imports products from .json
 const products = require(__dirname + "/products.json");
 for (let category in products) {
     //create qty sold key for each pro
     products[category].forEach((prod, i) => {prod.qty_sold = 0});
 }
-
+ //creates route of pro.js with objexts from json file
 app.get('/products.js', function (request, response, next) {
     response.type('.js');
     let productsStr = `let products = ${JSON.stringify(products)};`;
@@ -54,6 +56,7 @@ app.get('/products.js', function (request, response, next) {
 });
 app.use(express.urlencoded({extended: true}));
 
+//function to validate quant on prod cards input
 function validateQuantity(quantity, availableQuantity) {
     let errors = [];
 
@@ -101,9 +104,11 @@ app.post('/get_cart', function (request, response) {
 //temp storage for user inputs
 let temp_user = {};
 
+//function for inputs on login 
 app.post ('/process_login', function(request,response) {
     let POST = request.body;
     console.log('POST:', POST);
+    //extracts input from field on page
     let entered_email = POST['email'].toLowerCase();
     let entered_password = POST['password'];
 

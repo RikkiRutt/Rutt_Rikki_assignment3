@@ -1,3 +1,5 @@
+//code from sal
+
 /* 
     The purpose of this file is to store code relating to the nav bar and other code that should be loaded first (before the rest of the elements are defined)
 

@@ -62,6 +62,7 @@ window.onload = function() {
             document.getElementById('errMsg').innerHTML = "";
         }, 4000);
 
+        //loops through proucts, check qtys and updates DOM, validats qtys and displays errors
         for (let i in products[products_key]) {
             if (params.get(`qty${i}`) == 0) {
                 qty_form[`qty${i}`].value = '';

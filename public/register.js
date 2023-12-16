@@ -1,6 +1,6 @@
 let params = (new URL(document.location)).searchParams;
 
-//function when window load
+//function when window load retrieve query parapms from url (see above) popul fields based on params and displays errors
 window.onload = function () {
     let register_form = document.forms['register_form'];
 

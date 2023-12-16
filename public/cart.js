@@ -3,7 +3,7 @@
 
     The code in this file is used across all pages (except invoice)
 */
-
+//used sal code
 
 document.addEventListener('DOMContentLoaded', function() {
     // Displaying the cart total
